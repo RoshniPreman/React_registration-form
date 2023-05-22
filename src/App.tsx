@@ -1,31 +1,26 @@
-import { Grid, GridItem } from "@chakra-ui/react";
+import { Grid, GridItem, Heading } from "@chakra-ui/react";
 import "./App.css";
-import RegistrationForm from "./components/RegistrationForm";
+import UserManagement from "./components/UserManagement";
 
 function App() {
   return (
     <Grid
       templateAreas={`"header header"
-                          "nav main"
-                          "nav footer"`}
-      gridTemplateColumns={"150px 1fr"}
+                          "main main"
+                          "footer footer"`}
+      gridTemplateColumns={"1fr"}
     >
-      <GridItem area="header" bg="tomato">
-        Header
+      <GridItem area="header">
+        <Heading size="lg" p="20px">
+          User Management System
+        </Heading>
       </GridItem>
-      <GridItem area="nav" bg="yellow">
-        nav
+      <GridItem area="nav">nav</GridItem>
+      <GridItem area="main">
+        <UserManagement />
       </GridItem>
-      <GridItem area="main" bg="red">
-        main
-      </GridItem>
-      <GridItem area="footer" bg="blue">
-        footer
-      </GridItem>
+      <GridItem area="footer">footer</GridItem>
     </Grid>
-    //   <h1>Registration Form</h1>
-    //   <RegistrationForm></RegistrationForm>
-    // </>
   );
 }
 
