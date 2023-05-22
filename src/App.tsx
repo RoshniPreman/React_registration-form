@@ -15,11 +15,11 @@ function App() {
           User Management System
         </Heading>
       </GridItem>
-      <GridItem area="nav">nav</GridItem>
+      <GridItem area="nav"></GridItem>
       <GridItem area="main">
         <UserManagement />
       </GridItem>
-      <GridItem area="footer">footer</GridItem>
+      <GridItem area="footer"></GridItem>
     </Grid>
   );
 }
