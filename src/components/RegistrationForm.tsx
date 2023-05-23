@@ -13,41 +13,61 @@ import {
   Checkbox,
   Text,
   FormErrorMessage,
+  InputRightElement,
+  InputGroup,
 } from "@chakra-ui/react";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AiOutlineCheck } from "react-icons/ai";
 
-const RegistrationForm = () => {
-  const schema = z.object({
-    firstName: z.string().min(3).max(10).nonempty(),
-    lastName: z.string().min(3).max(10).nonempty(),
-    email: z.string().nonempty(), // validation regex to be added
-    phoneNumber: z.string(), // validation regex to be added
-    password: z.string(), // validation regex to be added
-    confirmPassword: z.string(), // validation regex to be added
-    temporaryAddress: z.string().nonempty(),
-    permanentAddress: z.string(),
-    state: z.string(),
-    district: z.string(),
-    gender: z.string().nonempty(),
-    dob: z.coerce.date(),
-  });
+interface props {
+  onSubmitClick: (data: FieldValues) => void;
+}
+
+const RegistrationForm = ({ onSubmitClick }: props) => {
+  const schema = z
+    .object({
+      firstName: z.string().min(3).max(10).nonempty(),
+      lastName: z.string().min(3).max(10).nonempty(),
+      email: z.string().email().nonempty(),
+      phoneNumber: z.string(), // validation regex to be added
+      password: z
+        .string()
+        .regex(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/g, {
+          message:
+            "Password must contain atleast at least a symbol, upper and lower case letters and a number",
+        })
+        .nonempty(), // validation regex to be added
+      confirmPassword: z.string().nonempty(), // validation regex to be added
+      temporaryAddress: z.string().nonempty(),
+      permanentAddress: z.string(),
+      state: z.string(),
+      district: z.string(),
+      gender: z.string().nonempty(),
+      dob: z.coerce.date(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    });
 
   type userType = z.infer<typeof schema>;
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState,
+    formState: { errors, isDirty, submitCount },
   } = useForm<userType>({
     resolver: zodResolver(schema),
   });
 
-  //    console.log(watch(errors));
-
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
+    console.log(formState);
+    onSubmitClick(data);
+    reset();
   };
 
   return (
@@ -56,7 +76,7 @@ const RegistrationForm = () => {
         Create User
       </Heading>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <HStack justify="space-evenly">
           <VStack w="400px">
             <FormControl isRequired isInvalid={!!errors.firstName?.message}>
@@ -73,7 +93,14 @@ const RegistrationForm = () => {
 
             <FormControl isRequired isInvalid={!!errors.password?.message}>
               <FormLabel>Passsword</FormLabel>
-              <Input {...register("password")} type="password" />
+              <InputGroup>
+                <Input {...register("password")} type="password" />
+                {!errors.password?.message && submitCount && (
+                  <InputRightElement color="green">
+                    <AiOutlineCheck />
+                  </InputRightElement>
+                )}
+              </InputGroup>
               {<FormErrorMessage>{errors.password?.message}</FormErrorMessage>}
             </FormControl>
 
@@ -133,7 +160,14 @@ const RegistrationForm = () => {
               isInvalid={!!errors.confirmPassword?.message}
             >
               <FormLabel>Confirm Passsword</FormLabel>
-              <Input type="password" {...register("confirmPassword")} />
+              <InputGroup>
+                <Input type="password" {...register("confirmPassword")} />
+                {!errors.confirmPassword?.message && submitCount && (
+                  <InputRightElement color="green">
+                    <AiOutlineCheck />
+                  </InputRightElement>
+                )}
+              </InputGroup>
               {
                 <FormErrorMessage>
                   {errors.confirmPassword?.message}
